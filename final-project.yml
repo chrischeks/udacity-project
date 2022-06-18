@@ -39,8 +39,8 @@ Resources:
         Fn::ImportValue: !Sub "${EnvironmentName}-VPCID"
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
+          FromPort: 80
+          ToPort: 80
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 22
@@ -61,14 +61,11 @@ Resources:
           sudo apt-get install apache2 -y
           sudo systemctl start apache2.service
           cd /var/www/html
-          echo "Udacity Demo Web Server Up and Running!" > index.html
-      # ToDo: AMI ID of Ubuntu Linux machine. Too get one, try creating a VM from the web console.
-      ImageId: ami-0cff7528ff583bf9a
-      # ToDo: Change the key-pair name, as applicable to you.
-      KeyName: udacityKeyPair
+          echo "it works! Udagram, Udacity" > index.html
+      ImageId: ami-0729e439b6769d6ab
       SecurityGroups:
         - Ref: WebServerSecGroup
-      InstanceType: t2.micro
+      InstanceType: t3.small
       BlockDeviceMappings:
         - DeviceName: "/dev/sdk"
           Ebs:
@@ -80,7 +77,7 @@ Resources:
         - Fn::ImportValue: !Sub "${EnvironmentName}-PRIV-NETS"
       LaunchConfigurationName:
         Ref: WebAppLaunchConfig
-      MinSize: "3"
+      MinSize: "4"
       MaxSize: "5"
       TargetGroupARNs:
         - Ref: WebAppTargetGroup
@@ -122,7 +119,7 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 2
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 5
       VpcId:
@@ -132,7 +129,7 @@ Resources:
 Outputs:
   WebAppLB:
     Description: A reference to the web app load balancer
-    Value: !Ref WebAppLB
+    Value: !Join ["//", ["http:", !Ref WebAppLB]]
     Export:
       Name: !Sub ${EnvironmentName}-WLB
   # This is also optional.
